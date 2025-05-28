@@ -6,6 +6,7 @@ import sys
 from koch_snowflake import KochSnowflake
 from sierpinski_gasket import SierpinskiGasket
 from sierpinski_arrowhead import SierpinskiArrowhead
+from mandelbrot_set import MandelbrotSet
 
 
 @click.command()
@@ -28,6 +29,10 @@ def main(algorithm_name, detail_level, size, output):
         arrowhead = SierpinskiArrowhead(size=size)
         points = arrowhead.generate_arrowhead(depth=detail_level)
         arrowhead.save_image(points, output)
+    elif algorithm_name == "mandelbrot-set":
+        mandelbrot = MandelbrotSet(size=size, max_iterations=detail_level)
+        mandelbrot_data = mandelbrot.generate_mandelbrot_set()
+        mandelbrot.save_image(mandelbrot_data, output)
     else:
         click.echo(f"Error: Unknown algorithm '{algorithm_name}'", err=True)
         sys.exit(1)

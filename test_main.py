@@ -75,6 +75,25 @@ def test_main_cli_sierpinski_arrowhead():
                 os.unlink(tmp.name)
 
 
+def test_main_cli_mandelbrot_set():
+    """Test CLI interface for mandelbrot-set algorithm"""
+    with tempfile.NamedTemporaryFile(suffix='.jpg', delete=False) as tmp:
+        try:
+            result = subprocess.run([
+                sys.executable, "main.py", "mandelbrot-set",
+                "--detail-level", "50",
+                "--size", "200",
+                "--output", tmp.name
+            ], capture_output=True, text=True)
+            
+            assert result.returncode == 0
+            assert os.path.exists(tmp.name)
+            assert os.path.getsize(tmp.name) > 0
+        finally:
+            if os.path.exists(tmp.name):
+                os.unlink(tmp.name)
+
+
 def test_main_cli_invalid_algorithm():
     """Test CLI interface with invalid algorithm name"""
     with tempfile.NamedTemporaryFile(suffix='.jpg', delete=False) as tmp:
