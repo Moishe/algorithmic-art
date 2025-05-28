@@ -8,16 +8,13 @@ from sierpinski_arrowhead import SierpinskiArrowhead
 
 class TestSierpinskiArrowhead:
     
-    def test_initial_line_segment(self):
-        """Test that initial line segment has correct endpoints"""
+    def test_generate_lsystem_string_depth_0(self):
+        """Test L-system string generation with depth 0"""
         arrowhead = SierpinskiArrowhead(size=300)
-        points = arrowhead.get_initial_line()
+        lsystem_string = arrowhead.generate_lsystem_string(depth=0)
         
-        assert len(points) == 2
-        # Should be a horizontal line centered in the image
-        p1, p2 = points
-        assert p1[1] == p2[1]  # Same y coordinate (horizontal)
-        assert p1[0] < p2[0]   # p1 is left of p2
+        # Depth 0 should just be the axiom "A"
+        assert lsystem_string == "A"
     
     def test_generate_arrowhead_depth_0(self):
         """Test arrowhead generation with depth 0 returns single line"""
@@ -45,19 +42,28 @@ class TestSierpinskiArrowhead:
         # Each subdivision should increase complexity
         assert len(points) > 3
     
-    def test_apply_arrowhead_transformation(self):
-        """Test arrowhead transformation on a line segment"""
+    def test_generate_lsystem_string_depth_1(self):
+        """Test L-system string generation with depth 1"""
         arrowhead = SierpinskiArrowhead(size=300)
-        p1 = (0, 0)
-        p2 = (60, 0)  # Horizontal line
+        lsystem_string = arrowhead.generate_lsystem_string(depth=1)
         
-        new_points = arrowhead.apply_arrowhead_transformation(p1, p2)
+        # Depth 1: A -> B-A-B
+        assert lsystem_string == "B-A-B"
+    
+    def test_interpret_turtle_commands_simple(self):
+        """Test turtle graphics interpretation with simple commands"""
+        arrowhead = SierpinskiArrowhead(size=300, step_length=10)
+        start_pos = (100, 100)
         
-        # Should return more than 2 points
-        assert len(new_points) >= 3
-        # First and last points should match original endpoints
-        assert new_points[0] == p1
-        assert new_points[-1] == p2
+        # Simple forward movement
+        points = arrowhead.interpret_turtle_commands("A", start_pos=start_pos, start_angle=0)
+        
+        # Should have start point and one forward movement
+        assert len(points) == 2
+        assert points[0] == start_pos
+        # Should move 10 units right (angle 0)
+        assert abs(points[1][0] - 110) < 0.1
+        assert abs(points[1][1] - 100) < 0.1
     
     def test_save_image_creates_file(self, tmp_path):
         """Test that save_image creates an image file"""

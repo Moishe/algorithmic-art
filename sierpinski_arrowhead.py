@@ -1,85 +1,122 @@
-# ABOUTME: Implementation of the Sierpinski arrowhead fractal algorithm
-# ABOUTME: Generates arrowhead curve fractals and renders them to image files
+# ABOUTME: Implementation of the Sierpinski arrowhead fractal using L-systems
+# ABOUTME: Generates arrowhead curve fractals via string rewriting and turtle graphics
 
 import math
 from PIL import Image, ImageDraw
 
 
 class SierpinskiArrowhead:
-    def __init__(self, size):
+    def __init__(self, size, step_length=None):
         self.size = size
+        self.step_length = step_length or 10  # Fixed step length for initial generation
+        self.angle = 60  # degrees
         
-    def get_initial_line(self):
-        """Generate initial horizontal line segment for the arrowhead"""
-        center_y = self.size // 2
-        margin = self.size * 0.15
-        start_x = margin
-        end_x = self.size - margin
+    def generate_lsystem_string(self, depth):
+        """Generate L-system string using Sierpinski arrowhead rules"""
+        # Axiom: A
+        # Rules: A -> B-A-B, B -> A+B+A
+        current = "A"
         
-        return [(start_x, center_y), (end_x, center_y)]
-    
-    def apply_arrowhead_transformation(self, p1, p2):
-        """Apply arrowhead transformation to a line segment"""
-        x1, y1 = p1
-        x2, y2 = p2
-        
-        # Calculate the direction and length of the segment
-        dx = x2 - x1
-        dy = y2 - y1
-        length = math.sqrt(dx*dx + dy*dy)
-        
-        if length == 0:
-            return [p1, p2]
+        for _ in range(depth):
+            next_string = ""
+            for char in current:
+                if char == "A":
+                    next_string += "B-A-B"
+                elif char == "B":
+                    next_string += "A+B+A"
+                else:
+                    next_string += char
+            current = next_string
             
-        # Normalize direction vector
-        unit_x = dx / length
-        unit_y = dy / length
+        return current
+    
+    def interpret_turtle_commands(self, lsystem_string, start_pos=None, start_angle=0):
+        """Interpret L-system string as turtle graphics commands"""
+        if start_pos is None:
+            start_pos = (self.size * 0.2, self.size * 0.8)
+            
+        points = []
+        x, y = start_pos
+        angle = start_angle  # degrees
         
-        # Calculate perpendicular vector (90 degrees counterclockwise)
-        perp_x = -unit_y
-        perp_y = unit_x
+        points.append((x, y))
         
-        # Points along the original line at 1/3 and 2/3
-        third_length = length / 3
-        p_third = (x1 + unit_x * third_length, y1 + unit_y * third_length)
-        p_two_thirds = (x1 + unit_x * 2 * third_length, y1 + unit_y * 2 * third_length)
-        
-        # Height of the equilateral triangle peak
-        triangle_height = third_length * math.sqrt(3) / 2
-        
-        # Peak point (middle of the transformed segment)
-        mid_x = (p_third[0] + p_two_thirds[0]) / 2
-        mid_y = (p_third[1] + p_two_thirds[1]) / 2
-        peak = (mid_x + perp_x * triangle_height, mid_y + perp_y * triangle_height)
-        
-        # Return the arrowhead pattern: start -> 1/3 -> peak -> 2/3 -> end
-        return [p1, p_third, peak, p_two_thirds, p2]
+        for char in lsystem_string:
+            if char in ["A", "B"]:  # Both A and B mean "move forward"
+                # Convert angle to radians and calculate new position
+                rad = math.radians(angle)
+                new_x = x + self.step_length * math.cos(rad)
+                new_y = y + self.step_length * math.sin(rad)
+                x, y = new_x, new_y
+                points.append((x, y))
+            elif char == "+":  # Turn left
+                angle += self.angle
+            elif char == "-":  # Turn right
+                angle -= self.angle
+                
+        return points
     
     def generate_arrowhead(self, depth):
         """Generate Sierpinski arrowhead curve with given recursion depth"""
-        # Start with initial line segment
-        points = self.get_initial_line()
+        # Generate L-system string
+        lsystem_string = self.generate_lsystem_string(depth)
         
-        # Apply arrowhead transformation for each depth level
-        for _ in range(depth):
-            new_points = []
-            for i in range(len(points) - 1):
-                current_point = points[i]
-                next_point = points[i + 1]
-                
-                # Apply arrowhead transformation to this segment
-                transformed = self.apply_arrowhead_transformation(current_point, next_point)
-                
-                # Add all but the last point (to avoid duplication)
-                new_points.extend(transformed[:-1])
+        # Convert to points using turtle graphics with temporary step length
+        temp_points = self.interpret_turtle_commands(lsystem_string)
+        
+        # Scale and center the curve to fit the image
+        scaled_points = self.scale_to_fit(temp_points)
+        
+        return scaled_points
+    
+    def scale_to_fit(self, points):
+        """Scale and center the curve to fit within the image bounds"""
+        if len(points) < 2:
+            return points
             
-            # Add the final point
-            if points:
-                new_points.append(points[-1])
-                
-            points = new_points
+        # Calculate bounding box
+        xs = [p[0] for p in points]
+        ys = [p[1] for p in points]
+        min_x, max_x = min(xs), max(xs)
+        min_y, max_y = min(ys), max(ys)
+        
+        # Current dimensions
+        current_width = max_x - min_x
+        current_height = max_y - min_y
+        
+        if current_width == 0 or current_height == 0:
+            return points
             
-        return points
+        # Target dimensions (with some margin)
+        margin = self.size * 0.1  # 10% margin
+        target_width = self.size - 2 * margin
+        target_height = self.size - 2 * margin
+        
+        # Calculate scale factor (use the smaller ratio to maintain aspect ratio)
+        scale_x = target_width / current_width
+        scale_y = target_height / current_height
+        scale = min(scale_x, scale_y)
+        
+        # Scale and translate points
+        scaled_points = []
+        for x, y in points:
+            # Translate to origin
+            x_norm = x - min_x
+            y_norm = y - min_y
+            
+            # Scale
+            x_scaled = x_norm * scale
+            y_scaled = y_norm * scale
+            
+            # Center in image
+            final_width = current_width * scale
+            final_height = current_height * scale
+            x_final = x_scaled + (self.size - final_width) / 2
+            y_final = y_scaled + (self.size - final_height) / 2
+            
+            scaled_points.append((x_final, y_final))
+            
+        return scaled_points
     
     def save_image(self, points, filename):
         """Save the arrowhead curve as an image"""
