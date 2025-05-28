@@ -99,3 +99,33 @@ def test_different_detail_levels():
             for tmp in [tmp1, tmp2]:
                 if os.path.exists(tmp.name):
                     os.unlink(tmp.name)
+
+
+def test_sierpinski_arrowhead_integration():
+    """Test complete workflow for Sierpinski arrowhead generation"""
+    with tempfile.NamedTemporaryFile(suffix='.jpg', delete=False) as tmp:
+        try:
+            # Run the CLI command
+            result = subprocess.run([
+                sys.executable, "main.py", "sierpinski-arrowhead",
+                "--detail-level", "3",
+                "--size", "300", 
+                "--output", tmp.name
+            ], capture_output=True, text=True)
+            
+            # Check command succeeded
+            assert result.returncode == 0
+            assert result.stderr == ""
+            
+            # Check file was created and has content
+            assert os.path.exists(tmp.name)
+            assert os.path.getsize(tmp.name) > 0
+            
+            # Verify it's a valid image
+            with Image.open(tmp.name) as img:
+                assert img.format == 'JPEG'
+                assert img.size == (300, 300)
+                
+        finally:
+            if os.path.exists(tmp.name):
+                os.unlink(tmp.name)

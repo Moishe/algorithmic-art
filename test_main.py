@@ -56,6 +56,25 @@ def test_main_cli_sierpinski_gasket():
                 os.unlink(tmp.name)
 
 
+def test_main_cli_sierpinski_arrowhead():
+    """Test CLI interface for sierpinski-arrowhead algorithm"""
+    with tempfile.NamedTemporaryFile(suffix='.jpg', delete=False) as tmp:
+        try:
+            result = subprocess.run([
+                sys.executable, "main.py", "sierpinski-arrowhead",
+                "--detail-level", "3",
+                "--size", "400",
+                "--output", tmp.name
+            ], capture_output=True, text=True)
+            
+            assert result.returncode == 0
+            assert os.path.exists(tmp.name)
+            assert os.path.getsize(tmp.name) > 0
+        finally:
+            if os.path.exists(tmp.name):
+                os.unlink(tmp.name)
+
+
 def test_main_cli_invalid_algorithm():
     """Test CLI interface with invalid algorithm name"""
     with tempfile.NamedTemporaryFile(suffix='.jpg', delete=False) as tmp:

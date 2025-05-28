@@ -5,6 +5,7 @@ import click
 import sys
 from koch_snowflake import KochSnowflake
 from sierpinski_gasket import SierpinskiGasket
+from sierpinski_arrowhead import SierpinskiArrowhead
 
 
 @click.command()
@@ -23,6 +24,10 @@ def main(algorithm_name, detail_level, size, output):
         gasket = SierpinskiGasket(size=size)
         triangles = gasket.generate_gasket(depth=detail_level)
         gasket.save_image(triangles, output)
+    elif algorithm_name == "sierpinski-arrowhead":
+        arrowhead = SierpinskiArrowhead(size=size)
+        points = arrowhead.generate_arrowhead(depth=detail_level)
+        arrowhead.save_image(points, output)
     else:
         click.echo(f"Error: Unknown algorithm '{algorithm_name}'", err=True)
         sys.exit(1)
