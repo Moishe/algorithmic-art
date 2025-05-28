@@ -39,6 +39,36 @@ def test_koch_snowflake_integration():
                 os.unlink(tmp.name)
 
 
+def test_sierpinski_gasket_integration():
+    """Test complete workflow for Sierpinski gasket generation"""
+    with tempfile.NamedTemporaryFile(suffix='.jpg', delete=False) as tmp:
+        try:
+            # Run the CLI command
+            result = subprocess.run([
+                sys.executable, "main.py", "sierpinski-gasket",
+                "--detail-level", "3",
+                "--size", "300", 
+                "--output", tmp.name
+            ], capture_output=True, text=True)
+            
+            # Check command succeeded
+            assert result.returncode == 0
+            assert result.stderr == ""
+            
+            # Check file was created and has content
+            assert os.path.exists(tmp.name)
+            assert os.path.getsize(tmp.name) > 0
+            
+            # Verify it's a valid image
+            with Image.open(tmp.name) as img:
+                assert img.format == 'JPEG'
+                assert img.size == (300, 300)
+                
+        finally:
+            if os.path.exists(tmp.name):
+                os.unlink(tmp.name)
+
+
 def test_different_detail_levels():
     """Test that different detail levels produce different results"""
     with tempfile.NamedTemporaryFile(suffix='.jpg', delete=False) as tmp1, \

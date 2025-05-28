@@ -4,6 +4,7 @@
 import click
 import sys
 from koch_snowflake import KochSnowflake
+from sierpinski_gasket import SierpinskiGasket
 
 
 @click.command()
@@ -18,6 +19,10 @@ def main(algorithm_name, detail_level, size, output):
         koch = KochSnowflake(size=size)
         points = koch.generate_snowflake(depth=detail_level)
         koch.save_image(points, output)
+    elif algorithm_name == "sierpinski-gasket":
+        gasket = SierpinskiGasket(size=size)
+        triangles = gasket.generate_gasket(depth=detail_level)
+        gasket.save_image(triangles, output)
     else:
         click.echo(f"Error: Unknown algorithm '{algorithm_name}'", err=True)
         sys.exit(1)
