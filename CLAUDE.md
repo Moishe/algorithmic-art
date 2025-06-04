@@ -48,30 +48,4 @@
 
 # Commit Changes
 
-When you are done with a feature or bug fix, verify the code you created by following the instructions below. If the verification finds no issues, create a commit with the verified commit message.
-
-# Code Verification
-
-Before committing any changes, you MUST use this verification tool:
-
-1. **verify_staged_changes**: Use when you've made changes locally and want to verify them before committing
-   - Always use the most recent git commit as `relative_to`.
-   - Stage all the relevant files.
-   - Provide a meaningful commit message suggestion
-   - Include relevant test files or dependent modules in `extra_file_context`
-
-## Required Information
-
-When calling the verify_staged_changes tool, always provide:
-- **summarized_goal**: A clear, concise summary of what you're trying to accomplish
-- **user_requests**: The exact, verbatim user requests that led to these changes. These MUST be the EXACT words the user used when requesting these changes; DO NOT summarize and DO NOT rewrite them.
-- **extra_file_context**: Files that might be affected but aren't in the diff (tests, config files, etc.)
-- **extra_context**: Any additional context that might be relevant for verification
-
-## Example Usage
-
-Before committing features or bug fixes:
-```
-I'll verify these changes before committing:
-[Call verify_staged_changes with appropriate parameters]
-```
+When you are done with a feature or bug fix, and when all tests pass, create a commit with a brief commit message and all the relevant files.
