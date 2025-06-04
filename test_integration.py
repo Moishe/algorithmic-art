@@ -16,7 +16,7 @@ def test_koch_snowflake_integration():
             # Run the CLI command
             result = subprocess.run([
                 sys.executable, "main.py", "koch-snowflake",
-                "--detail-level", "3",
+                "--recursion-depth", "3",
                 "--size", "300", 
                 "--output", tmp.name
             ], capture_output=True, text=True)
@@ -46,7 +46,7 @@ def test_sierpinski_gasket_integration():
             # Run the CLI command
             result = subprocess.run([
                 sys.executable, "main.py", "sierpinski-gasket",
-                "--detail-level", "3",
+                "--recursion-depth", "3",
                 "--size", "300", 
                 "--output", tmp.name
             ], capture_output=True, text=True)
@@ -77,7 +77,7 @@ def test_different_detail_levels():
             # Generate snowflake with depth 1
             subprocess.run([
                 sys.executable, "main.py", "koch-snowflake",
-                "--detail-level", "1",
+                "--recursion-depth", "1",
                 "--size", "200",
                 "--output", tmp1.name
             ], check=True)
@@ -85,7 +85,7 @@ def test_different_detail_levels():
             # Generate snowflake with depth 2
             subprocess.run([
                 sys.executable, "main.py", "koch-snowflake", 
-                "--detail-level", "2",
+                "--recursion-depth", "2",
                 "--size", "200",
                 "--output", tmp2.name
             ], check=True)
@@ -108,7 +108,7 @@ def test_sierpinski_arrowhead_integration():
             # Run the CLI command
             result = subprocess.run([
                 sys.executable, "main.py", "sierpinski-arrowhead",
-                "--detail-level", "3",
+                "--recursion-depth", "3",
                 "--size", "300", 
                 "--output", tmp.name
             ], capture_output=True, text=True)
@@ -138,7 +138,7 @@ def test_mandelbrot_set_integration():
             # Run the CLI command
             result = subprocess.run([
                 sys.executable, "main.py", "mandelbrot-set",
-                "--detail-level", "50",
+                "--num-iterations", "50",
                 "--size", "200", 
                 "--output", tmp.name
             ], capture_output=True, text=True)

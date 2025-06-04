@@ -15,7 +15,7 @@ def test_main_cli_koch_snowflake():
         try:
             result = subprocess.run([
                 sys.executable, "main.py", "koch-snowflake",
-                "--detail-level", "3",
+                "--recursion-depth", "3",
                 "--size", "400",
                 "--output", tmp.name
             ], capture_output=True, text=True)
@@ -43,7 +43,7 @@ def test_main_cli_sierpinski_gasket():
         try:
             result = subprocess.run([
                 sys.executable, "main.py", "sierpinski-gasket",
-                "--detail-level", "3",
+                "--recursion-depth", "3",
                 "--size", "400",
                 "--output", tmp.name
             ], capture_output=True, text=True)
@@ -62,7 +62,7 @@ def test_main_cli_sierpinski_arrowhead():
         try:
             result = subprocess.run([
                 sys.executable, "main.py", "sierpinski-arrowhead",
-                "--detail-level", "3",
+                "--recursion-depth", "3",
                 "--size", "400",
                 "--output", tmp.name
             ], capture_output=True, text=True)
@@ -81,7 +81,7 @@ def test_main_cli_mandelbrot_set():
         try:
             result = subprocess.run([
                 sys.executable, "main.py", "mandelbrot-set",
-                "--detail-level", "50",
+                "--num-iterations", "50",
                 "--size", "200",
                 "--output", tmp.name
             ], capture_output=True, text=True)
@@ -96,16 +96,9 @@ def test_main_cli_mandelbrot_set():
 
 def test_main_cli_invalid_algorithm():
     """Test CLI interface with invalid algorithm name"""
-    with tempfile.NamedTemporaryFile(suffix='.jpg', delete=False) as tmp:
-        try:
-            result = subprocess.run([
-                sys.executable, "main.py", "invalid-algorithm",
-                "--detail-level", "3",
-                "--size", "400", 
-                "--output", tmp.name
-            ], capture_output=True, text=True)
-            
-            assert result.returncode != 0
-        finally:
-            if os.path.exists(tmp.name):
-                os.unlink(tmp.name)
+    result = subprocess.run([
+        sys.executable, "main.py", "invalid-algorithm"
+    ], capture_output=True, text=True)
+    
+    assert result.returncode != 0
+    assert "No such command 'invalid-algorithm'" in result.stderr

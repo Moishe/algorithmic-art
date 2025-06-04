@@ -8,4 +8,5 @@ dependencies = [
     "click>=8.2.1",
     "fastmcp>=2.5.1",
     "pillow>=11.2.1",
+    "pytest>=8.4.0",
 ]
