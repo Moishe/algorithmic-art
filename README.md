@@ -1,14 +1,48 @@
-This project is a generative/procedural computer art explorer.
+# Generative Computer Art
 
-Create AI art by calling main.py like this:
+This project is a generative/procedural computer art explorer that creates fractal visualizations using various mathematical algorithms.
 
-`uv run main.py [algorithm_name] --detail-level <n> --size <h> --output <filename.jpg>`
+## Usage
 
-algorithm_name specifies the algorithm. Currently supported algorithms are:
-- koch-snowflake: Generates a Koch snowflake fractal
-- sierpinski-gasket: Generates a Sierpinski gasket fractal
-- sierpinski-arrowhead: Generates a Sierpinski arrowhead curve fractal
-- mandelbrot-set: Generates a Mandelbrot set fractal visualization
-detail-level is the level of detail. For recursive algorithms like the koch snowflake, this is the depth of recursion. For iterative algorithms like the Mandelbrot set, this is the number of iterations. For cellular automata, this is the number of generations to run.
-size specifies the width and height of the resulting jpg.
-output is the output filename.
+The application uses algorithm-specific subcommands. Get help for any command:
+
+```bash
+uv run main.py --help
+uv run main.py [algorithm] --help
+```
+
+## Supported Algorithms
+
+### Koch Snowflake
+```bash
+uv run main.py koch-snowflake --recursion-depth <n> --size <pixels> --output <filename>
+```
+
+### Sierpinski Gasket  
+```bash
+uv run main.py sierpinski-gasket --recursion-depth <n> --size <pixels> --output <filename>
+```
+
+### Sierpinski Arrowhead
+```bash
+uv run main.py sierpinski-arrowhead --recursion-depth <n> --size <pixels> --output <filename>
+```
+
+### Mandelbrot Set
+```bash
+uv run main.py mandelbrot-set --num-iterations <n> --size <pixels> --output <filename>
+```
+
+## Parameters
+
+- `--recursion-depth`: Depth of recursion for fractal algorithms (koch-snowflake, sierpinski-gasket, sierpinski-arrowhead)
+- `--num-iterations`: Maximum iterations for convergence testing (mandelbrot-set)
+- `--size`: Width and height of output image in pixels
+- `--output`: Output filename for the generated image
+
+## Development
+
+Run tests with:
+```bash
+uv run pytest
+```
